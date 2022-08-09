@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
 class CategoryData {
   int index = -1;
@@ -13,7 +14,7 @@ void main() {
   runApp(const DraggableScreen());
 }
 
-class DraggableScreen extends StatelessWidget {
+class DraggableScreen extends HookWidget {
   const DraggableScreen({Key? key}) : super(key: key);
 
   @override
@@ -23,32 +24,22 @@ class DraggableScreen extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Drag and Drop Test'),
+      home: DraggablePage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _DraggableState();
-}
-
-class _DraggableState extends State<MyHomePage> {
+// ignore: must_be_immutable
+class DraggablePage extends HookWidget {
   List<CategoryData> itemList = [];
-  _DraggableState() {
-    itemList.add(CategoryData(index: 1, name: "A"));
-    itemList.add(CategoryData(index: 2, name: "B"));
-  }
+
+  DraggablePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: const Text('Drag and Drop Test'),
       ),
       body: GridView.extent(
           maxCrossAxisExtent: 150,
@@ -60,7 +51,7 @@ class _DraggableState extends State<MyHomePage> {
 }
 
 // ignore: must_be_immutable
-class DragTargetItem extends StatefulWidget {
+class DragTargetItem extends HookWidget {
   int index = 0;
   List<CategoryData> itemList = [];
   DragTargetItem(int index, List<CategoryData> itemList, {Key? key})
@@ -68,12 +59,6 @@ class DragTargetItem extends StatefulWidget {
     this.index = index;
     this.itemList = itemList;
   }
-  @override
-  // ignore: library_private_types_in_public_api
-  _DragTargetState createState() => _DragTargetState();
-}
-
-class _DragTargetState extends State<DragTargetItem> {
   bool willAccept = false;
   @override
   Widget build(BuildContext context) {
@@ -84,9 +69,7 @@ class _DragTargetState extends State<DragTargetItem> {
         },
         onAccept: (CategoryData? data) {
           if (data != null && getItemData() == null) {
-            setState(() {
-              data.index = widget.index;
-            });
+            data.index = index;
           }
           willAccept = false;
         },
@@ -104,9 +87,7 @@ class _DragTargetState extends State<DragTargetItem> {
               data: getItemData(),
               onDragStarted: () {},
               onDraggableCanceled: (velocity, offset) {},
-              onDragCompleted: () {
-                setState(() {});
-              },
+              onDragCompleted: () {},
               onDragEnd: (details) {},
               child: itemWedget(0),
               feedback: itemWedget(1),
@@ -123,7 +104,7 @@ class _DragTargetState extends State<DragTargetItem> {
           color: willAccept ? Colors.orangeAccent : Colors.white70,
           border: Border.all(color: Colors.deepOrange),
           borderRadius: BorderRadius.circular(5)),
-      child: Text(widget.index.toString(),
+      child: Text(index.toString(),
           style: const TextStyle(color: Colors.black38, fontSize: 20.0)),
     );
   }
@@ -138,7 +119,7 @@ class _DragTargetState extends State<DragTargetItem> {
             borderRadius: BorderRadius.circular(5)),
         child: Stack(children: <Widget>[
           (m == 0)
-              ? Text(widget.index.toString(),
+              ? Text(index.toString(),
                   style: const TextStyle(color: Colors.white, fontSize: 20.0))
               : Container(),
           Center(
@@ -148,9 +129,11 @@ class _DragTargetState extends State<DragTargetItem> {
   }
 
   CategoryData? getItemData() {
-    final i =
-        widget.itemList.indexWhere(((item) => item.index == widget.index));
-    return i >= 0 ? widget.itemList[i] : null;
+    itemList.add(CategoryData(index: 1, name: "A"));
+    itemList.add(CategoryData(index: 2, name: "B"));
+    itemList.add(CategoryData(index: 3, name: "C"));
+    final i = itemList.indexWhere(((item) => item.index == index));
+    return i >= 0 ? itemList[i] : null;
   }
 
   String getName() {
