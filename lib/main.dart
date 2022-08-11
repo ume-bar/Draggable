@@ -38,10 +38,10 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _DraggableState extends State<MyHomePage> {
-  List<CategoryData> itemList = [];
+  List<CategoryData> list = [];
   _DraggableState() {
-    itemList.add(CategoryData(index: 1, name: "A"));
-    itemList.add(CategoryData(index: 2, name: "B"));
+    list.add(CategoryData(index: 1, name: "A"));
+    list.add(CategoryData(index: 2, name: "B"));
   }
 
   @override
@@ -53,7 +53,7 @@ class _DraggableState extends State<MyHomePage> {
       body: GridView.extent(
           maxCrossAxisExtent: 150,
           children: List.generate(12, (index) {
-            return DragTargetItem(index + 1, itemList);
+            return DragTargetItem(index + 1, list);
           })),
     );
   }
@@ -62,11 +62,11 @@ class _DraggableState extends State<MyHomePage> {
 // ignore: must_be_immutable
 class DragTargetItem extends StatefulWidget {
   int index = 0;
-  List<CategoryData> itemList = [];
-  DragTargetItem(int index, List<CategoryData> itemList, {Key? key})
+  List<CategoryData> list = [];
+  DragTargetItem(int index, List<CategoryData> list, {Key? key})
       : super(key: key) {
     this.index = index;
-    this.itemList = itemList;
+    this.list = list;
   }
   @override
   // ignore: library_private_types_in_public_api
@@ -83,7 +83,7 @@ class _DragTargetState extends State<DragTargetItem> {
           return dropWedget();
         },
         onAccept: (CategoryData? data) {
-          if (data != null && getItemData() == null) {
+          if (data != null && getData() == null) {
             setState(() {
               data.index = widget.index;
             });
@@ -98,19 +98,17 @@ class _DragTargetState extends State<DragTargetItem> {
           willAccept = false;
         },
       ),
-      getItemData() == null
+      getData() == null
           ? Container()
-          : Draggable(
-              data: getItemData(),
-              onDragStarted: () {},
-              onDraggableCanceled: (velocity, offset) {},
+          : LongPressDraggable(
+              data: getData(),
               onDragCompleted: () {
                 setState(() {});
               },
-              onDragEnd: (details) {},
-              child: itemWedget(0),
-              feedback: itemWedget(1),
-              childWhenDragging: itemWedget(2),
+              delay: Duration(milliseconds: 1000),
+              child: itemWedget('A'),
+              feedback: itemWedget('B'),
+              childWhenDragging: itemWedget('C'),
             ),
     ]);
   }
@@ -128,32 +126,37 @@ class _DragTargetState extends State<DragTargetItem> {
     );
   }
 
-  Widget itemWedget(int m) {
+  Widget itemWedget(String m) {
     return Container(
         width: 100.0,
         height: 100.0,
         decoration: BoxDecoration(
-            color: (m == 2) ? Colors.orangeAccent : Colors.orange,
+            color: (m == 'C') ? Colors.orangeAccent : Colors.orange,
             border: Border.all(color: Colors.deepOrange),
             borderRadius: BorderRadius.circular(5)),
         child: Stack(children: <Widget>[
-          (m == 0)
+          (m == 'A')
               ? Text(widget.index.toString(),
-                  style: const TextStyle(color: Colors.white, fontSize: 20.0))
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 20.0,
+                      decoration: TextDecoration.none))
               : Container(),
           Center(
               child: Text(getName(),
-                  style: const TextStyle(color: Colors.white, fontSize: 40.0)))
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 60.0,
+                      decoration: TextDecoration.none)))
         ]));
   }
 
-  CategoryData? getItemData() {
-    final i =
-        widget.itemList.indexWhere(((item) => item.index == widget.index));
-    return i >= 0 ? widget.itemList[i] : null;
+  CategoryData? getData() {
+    final i = widget.list.indexWhere(((item) => item.index == widget.index));
+    return i >= 0 ? widget.list[i] : null;
   }
 
   String getName() {
-    return getItemData() != null ? getItemData()!.name : "";
+    return getData() != null ? getData()!.name : "";
   }
 }
