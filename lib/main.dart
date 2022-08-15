@@ -42,6 +42,8 @@ class _DraggableState extends State<MyHomePage> {
   _DraggableState() {
     list.add(CategoryData(index: 1, name: "A"));
     list.add(CategoryData(index: 2, name: "B"));
+    list.add(CategoryData(index: 3, name: "C"));
+    list.add(CategoryData(index: 4, name: "D"));
   }
 
   @override
@@ -84,13 +86,17 @@ class _DragTargetState extends State<DragTargetItem> {
         },
         onAccept: (CategoryData? data) {
           if (data != null && getData() == null) {
+            print(data.index);
+
             setState(() {
               data.index = widget.index;
             });
+            print(data.index);
           }
           willAccept = false;
         },
-        onWillAccept: (data) {
+        onWillAccept: (CategoryData? data) {
+          print(data!.index);
           willAccept = true;
           return true;
         },
@@ -100,15 +106,14 @@ class _DragTargetState extends State<DragTargetItem> {
       ),
       getData() == null
           ? Container()
-          : LongPressDraggable(
+          : Draggable(
               data: getData(),
               onDragCompleted: () {
                 setState(() {});
               },
-              delay: Duration(milliseconds: 1000),
-              child: itemWedget('A'),
               feedback: itemWedget('B'),
               childWhenDragging: itemWedget('C'),
+              child: itemWedget('A'),
             ),
     ]);
   }
