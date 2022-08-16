@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 
 class CategoryData {
+  CategoryData(
+      {required this.index, required this.name, required this.draggable});
   int index = -1;
   String name = "";
-  CategoryData({int? index, String? name}) {
-    if (index != null) this.index = index;
-    if (name != null) this.name = name;
-  }
+  bool draggable = false;
 }
 
 void main() {
@@ -40,10 +39,10 @@ class MyHomePage extends StatefulWidget {
 class _DraggableState extends State<MyHomePage> {
   List<CategoryData> list = [];
   _DraggableState() {
-    list.add(CategoryData(index: 1, name: "A"));
-    list.add(CategoryData(index: 2, name: "B"));
-    list.add(CategoryData(index: 3, name: "C"));
-    list.add(CategoryData(index: 4, name: "D"));
+    list.add(CategoryData(index: 1, name: "A", draggable: false));
+    list.add(CategoryData(index: 2, name: "B", draggable: false));
+    list.add(CategoryData(index: 3, name: "C", draggable: false));
+    list.add(CategoryData(index: 4, name: "D", draggable: false));
   }
 
   @override
@@ -77,42 +76,71 @@ class DragTargetItem extends StatefulWidget {
 
 class _DragTargetState extends State<DragTargetItem> {
   bool willAccept = false;
+  bool willReject = false;
   @override
   Widget build(BuildContext context) {
     return Stack(children: <Widget>[
-      DragTarget(
-        builder: (context, candidateData, rejectedData) {
-          return dropWedget();
-        },
-        onAccept: (CategoryData? data) {
-          if (data != null && getData() == null) {
-            print(data.index);
+      willReject
+          ? Container()
+          : DragTarget(
+              // ドラッグターゲットのウィジェット
+              builder: (context, candidateData, rejectedData) {
+                return dropWedget();
+              },
+              onAccept: (CategoryData? data) {
+                if (data != null && getData() == null) {
+                  print(data.index);
+                  print(widget.list);
 
-            setState(() {
-              data.index = widget.index;
-            });
-            print(data.index);
-          }
-          willAccept = false;
-        },
-        onWillAccept: (CategoryData? data) {
-          print(data!.index);
-          willAccept = true;
-          return true;
-        },
-        onLeave: (data) {
-          willAccept = false;
-        },
-      ),
+                  setState(() {
+                    // int a = data.index;
+                    data.index = widget.index;
+                    // widget.index = a;
+                  });
+                  print(data.index);
+                }
+                willAccept = false;
+                // willReject = false;
+              },
+              onWillAccept: (data) {
+                print("ターゲット確認 $data");
+                willAccept = true;
+                // willReject = true;
+                return true;
+              },
+              // onLeave: (data) {
+              //   willAccept = false;
+              //   // willReject = false;
+              // },
+            ),
       getData() == null
           ? Container()
           : Draggable(
+              // feedbackをchildと同じにする
+              ignoringFeedbackSemantics: false,
               data: getData(),
+              // DragTargetで受け入られた時呼び出される
               onDragCompleted: () {
+                print("ドロップ完了");
                 setState(() {});
               },
+              onDragStarted: () {
+                print(getData);
+                print("ドラッグ開始");
+                willAccept = true;
+                // willReject = true;
+                setState(() {});
+              },
+              onDragEnd: (data) {
+                print("ドラッグ終了: $data");
+                willAccept = false;
+                // willReject = false;
+              },
+              // ドラッグ中、ターゲットに当てられるウィジェット
               feedback: itemWedget('B'),
+              // ドラッグアイテムの初期値のウィジェット
               childWhenDragging: itemWedget('C'),
+              // ドラッグアイテムの下に位置するウィジェットでレイアウト可能
               child: itemWedget('A'),
             ),
     ]);
@@ -156,6 +184,7 @@ class _DragTargetState extends State<DragTargetItem> {
         ]));
   }
 
+// １２個あるウィジェットの中にあるインスタンスのindexを照合
   CategoryData? getData() {
     final i = widget.list.indexWhere(((item) => item.index == widget.index));
     return i >= 0 ? widget.list[i] : null;
