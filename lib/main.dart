@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+
 class Category {
   int index;
   String name;
@@ -73,9 +74,11 @@ class DragTargetItem extends StatefulWidget {
 
 class _DragTargetState extends State<DragTargetItem> {
   bool willAccept = false;
+  bool willReject = false;
   @override
   Widget build(BuildContext context) {
     return Stack(children: <Widget>[
+
       DragTarget(
         builder: (context, candidateData, rejectedData) {
           return Container(
@@ -168,6 +171,7 @@ class _DragTargetState extends State<DragTargetItem> {
                       decoration: TextDecoration.none)))
         ]));
   }
+
 
   Category? category() {
     final i = widget.list.indexWhere(((item) => item.index == widget.index));
