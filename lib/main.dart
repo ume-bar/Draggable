@@ -176,8 +176,8 @@ class _DragTargetState extends State<DragTargetItem> {
       if (category() != null && category()!.draggable)
         // ignore: avoid_unnecessary_containers
         Container(
-            alignment: Alignment.topRight,
-            padding: const EdgeInsets.only(right: 18),
+            alignment: Alignment.bottomCenter,
+            padding: const EdgeInsets.only(bottom: 5),
             child: const Text("Draggable",
                 style: TextStyle(
                   color: Colors.white,
