@@ -44,11 +44,10 @@ class DraggableTestState extends State<DraggableTest> {
 
   int index = 0;
 // indexの初期値を設定
-  void updator() {
+  void listUp() {
     setState(() {
-      index = index + 1;
+      list = list;
     });
-    print(index);
     print((list));
   }
 
@@ -61,7 +60,7 @@ class DraggableTestState extends State<DraggableTest> {
           maxCrossAxisExtent: 120,
           children: List.generate(12, (i) {
             // 12個のwidgetを作成
-            return DragTargetItem(i, list, updator);
+            return DragTargetItem(i, list, listUp);
           })),
     );
   }
@@ -72,9 +71,9 @@ class DragTargetItem extends StatefulWidget {
   // indexウィジェットの内容
   final int index;
   final List<Category> list;
-  final Function() updator;
+  final Function() listUp;
 
-  const DragTargetItem(this.index, this.list, this.updator, {Key? key})
+  const DragTargetItem(this.index, this.list, this.listUp, {Key? key})
       : super(key: key);
   @override
   // ignore: library_private_types_in_public_api
@@ -120,7 +119,7 @@ class _DragTargetState extends State<DragTargetItem> {
               cat.index = cat2.index;
               cat2.index = tmp;
               // indexを更新
-              widget.updator();
+              widget.listUp();
               print("アップデータ２");
             });
           }
@@ -153,7 +152,7 @@ class _DragTargetState extends State<DragTargetItem> {
               for (var d in widget.list) {
                 d.draggable = true;
               }
-              widget.updator();
+              widget.listUp();
               print("アップデータ３");
             });
             print("ドロップ完了");
@@ -169,7 +168,7 @@ class _DragTargetState extends State<DragTargetItem> {
               for (var d in widget.list) {
                 d.draggable = false;
               }
-              widget.updator();
+              widget.listUp();
               print("アップデータ１");
             });
           },
