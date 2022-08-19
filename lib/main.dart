@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 // カテゴリのクラスを定義
@@ -33,10 +35,12 @@ class DraggableTest extends StatefulWidget {
 
 class DraggableTestState extends State<DraggableTest> {
   // List.generateとString.fromCharCodeで規則性のあるラテン文字を要素に持つリストを作成
-  List<Category> list = List.generate(
-      4,
-      (index) =>
-          Category(index, String.fromCharCode(index + 'A'.codeUnits[0])));
+  List<Category> list = List.generate(4, (index) {
+    Category(index, String.fromCharCode(index + 'A'.codeUnits[0]));
+    print(index);
+    print("XXXXXXXXX");
+    return Category(index, String.fromCharCode(index + 'A'.codeUnits[0]));
+  });
 
   int index = 0;
 // indexの初期値を設定
@@ -44,6 +48,8 @@ class DraggableTestState extends State<DraggableTest> {
     setState(() {
       index = index + 1;
     });
+    print(index);
+    print((list));
   }
 
   DraggableTestState();
@@ -115,6 +121,7 @@ class _DragTargetState extends State<DragTargetItem> {
               cat2.index = tmp;
               // indexを更新
               widget.updator();
+              print("アップデータ２");
             });
           }
           willAccept = false;
@@ -126,9 +133,11 @@ class _DragTargetState extends State<DragTargetItem> {
           return true;
         },
         onMove: (data) {
+          print("ターゲット内を移動中");
           setState(() {});
         },
         onLeave: (data) {
+          print("ターゲット消失");
           willAccept = false;
         },
       ),
@@ -145,10 +154,12 @@ class _DragTargetState extends State<DragTargetItem> {
                 d.draggable = true;
               }
               widget.updator();
+              print("アップデータ３");
             });
             print("ドロップ完了");
           },
           onDragUpdate: (detail) {
+            print("アップデート: $detail");
             setState(() {});
           },
           onDragStarted: () {
@@ -159,6 +170,7 @@ class _DragTargetState extends State<DragTargetItem> {
                 d.draggable = false;
               }
               widget.updator();
+              print("アップデータ１");
             });
           },
           onDragEnd: (data) {
@@ -215,6 +227,7 @@ class _DragTargetState extends State<DragTargetItem> {
 // １２個あるウィジェットの中にあるインスタンスのindexを照合
   Category? category() {
     final i = widget.list.indexWhere(((item) => item.index == widget.index));
+    // 要素がないウィジェットは-1が返される
     return i >= 0 ? widget.list[i] : null;
   }
 }
